@@ -37,6 +37,7 @@
 #include "DAC.h"
 #include "Switch.h"
 #include "SysTick.h"
+#include "Music.h"
 
 
 #define PF1       (*((volatile uint32_t *)0x40025008))
@@ -63,12 +64,17 @@ long StartCritical (void);    // previous I bit, disable interrupts
 void EndCritical(long sr);    // restore I bit to previous value
 void WaitForInterrupt(void);  // low power mode
 
-void UserTask(void){
+void UserTask0(void){
+	PF1 ^= 0x02;
+}
 
+void UserTask1(void){
+	PF2 ^= 0x04;
 }
 // if desired interrupt frequency is f, Timer0A_Init parameter is busfrequency/f
 #define F16HZ (50000000/16)
 #define F20KHZ (50000000/20000)
+#define F1HZ 50000000
 //debug code
 int main(void){ 
   PLL_Init(Bus50MHz);              // bus clock at 50 MHz
@@ -82,7 +88,8 @@ int main(void){
   GPIO_PORTF_AMSEL_R = 0;          // disable analog functionality on PF
   LEDS = 0;                        // turn all LEDs off
 //  Timer0A_Init(&UserTask, F20KHZ);     // initialize timer0A (20,000 Hz)
-  Timer0A_Init(&UserTask, F16HZ);  // initialize timer0A (16 Hz)
+  Timer0A_Init(&UserTask0, F1HZ);  // initialize timer0A (16 Hz)
+	Timer1_Init(&UserTask1, F20KHZ);  // initialize timer0A (16 Hz)
 	SysTick_Init();
 	DAC_Init(0x1000);                  // initialize with command: Vout = Vref
   EnableInterrupts();
