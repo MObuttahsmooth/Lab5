@@ -6,7 +6,9 @@
 #include <stdint.h>
 
 struct Note {
-	uint16_t length;
 	uint16_t freq;
+	uint32_t length; // in # of eigth notes
 };
 typedef struct Note Note;
+
+

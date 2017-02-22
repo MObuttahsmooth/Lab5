@@ -1,9 +1,7 @@
-// PeriodicTimer0AInts.c
-// Runs on LM4F120/TM4C123
-// Use Timer0A in periodic mode to request interrupts at a particular
-// period.
-// Daniel Valvano
-// September 11, 2013
+// filename ******** main.c ************** 
+// Lab 5 Spring 2017
+// Matt Owens & Rebecca Ho
+// 2/21/17
 
 /* This example accompanies the book
    "Embedded Systems: Real Time Interfacing to Arm Cortex M Microcontrollers",
@@ -89,7 +87,7 @@ int main(void){
   LEDS = 0;                        // turn all LEDs off
 //  Timer0A_Init(&UserTask, F20KHZ);     // initialize timer0A (20,000 Hz)
   Timer0A_Init(&UserTask0, F1HZ);  // initialize timer0A (16 Hz)
-	Timer1_Init(&UserTask1, F20KHZ);  // initialize timer0A (16 Hz)
+	Timer1A_Init(&UserTask1, F20KHZ);  // initialize timer0A (16 Hz)
 	SysTick_Init();
 	DAC_Init(0x1000);                  // initialize with command: Vout = Vref
   EnableInterrupts();

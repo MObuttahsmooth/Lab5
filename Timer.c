@@ -73,12 +73,16 @@ void Timer0A_Handler(void){
   (*PeriodicTask0)();                // execute user task
 }
 
+void Timer0A_SetReload(uint32_t period) {
+	TIMER0_TAILR_R = period-1;    // reload value
+}
+
 // ***************** TIMER1_Init ****************
 // Activate TIMER1 interrupts to run user task periodically
 // Inputs:  task is a pointer to a user function
 //          period in units (1/clockfreq)
 // Outputs: none
-void Timer1_Init(void(*task)(void), uint32_t period){
+void Timer1A_Init(void(*task)(void), uint32_t period){
   SYSCTL_RCGCTIMER_R |= 0x02;   // 0) activate TIMER1
   PeriodicTask1 = task;          // user function
   TIMER1_CTL_R = 0x00000000;    // 1) disable TIMER1A during setup
@@ -98,4 +102,8 @@ void Timer1_Init(void(*task)(void), uint32_t period){
 void Timer1A_Handler(void){
   TIMER1_ICR_R = TIMER_ICR_TATOCINT;// acknowledge TIMER1A timeout
   (*PeriodicTask1)();                // execute user task
+}
+
+void Timer1A_SetReload(uint32_t period) {
+	TIMER1_TAILR_R = period-1;    // reload value
 }

@@ -7,7 +7,7 @@
 
   <Targets>
     <Target>
-      <TargetName>PeriodicTimer0AInts</TargetName>
+      <TargetName>Lab5</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
       <TargetOption>
@@ -411,19 +411,39 @@
               <FilePath>.\startup.s</FilePath>
             </File>
             <File>
-              <FileName>PeriodicTimer0AInts.c</FileName>
+              <FileName>DAC.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\PeriodicTimer0AInts.c</FilePath>
+              <FilePath>.\DAC.c</FilePath>
             </File>
             <File>
-              <FileName>Timer0A.c</FileName>
+              <FileName>main.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\Timer0A.c</FilePath>
+              <FilePath>.\main.c</FilePath>
+            </File>
+            <File>
+              <FileName>Music.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Music.c</FilePath>
             </File>
             <File>
               <FileName>PLL.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\PLL.c</FilePath>
+            </File>
+            <File>
+              <FileName>Switch.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Switch.c</FilePath>
+            </File>
+            <File>
+              <FileName>SysTick.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\SysTick.c</FilePath>
+            </File>
+            <File>
+              <FileName>Timer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Timer.c</FilePath>
             </File>
           </Files>
         </Group>
