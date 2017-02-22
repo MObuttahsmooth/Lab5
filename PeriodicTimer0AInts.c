@@ -30,7 +30,7 @@
 // Therefore, the frequency of the pulse measured on PF2 is 1/8 of
 // the frequency of the Timer0A interrupts.
 
-#include "..//inc//tm4c123gh6pm.h"
+#include "..\ValvanoWareTM4C123\ValvanoWareTM4C123\inc\tm4c123gh6pm.h"
 #include <stdint.h>
 #include "PLL.h"
 #include "Timer0A.h"
