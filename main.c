@@ -33,7 +33,7 @@
 #include "..\ValvanoWareTM4C123\ValvanoWareTM4C123\inc\tm4c123gh6pm.h"
 #include <stdint.h>
 #include "PLL.h"
-#include "Timer0A.h"
+#include "Timer.h"
 #include "DAC.h"
 #include "Switch.h"
 #include "SysTick.h"

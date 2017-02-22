@@ -411,11 +411,6 @@
               <FilePath>.\startup.s</FilePath>
             </File>
             <File>
-              <FileName>Timer0A.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Timer0A.c</FilePath>
-            </File>
-            <File>
               <FileName>PLL.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\PLL.c</FilePath>
@@ -434,6 +429,16 @@
               <FileName>Switch.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Switch.c</FilePath>
+            </File>
+            <File>
+              <FileName>SysTick.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\SysTick.c</FilePath>
+            </File>
+            <File>
+              <FileName>Timer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Timer.c</FilePath>
             </File>
           </Files>
         </Group>
