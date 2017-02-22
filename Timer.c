@@ -68,8 +68,12 @@ void Timer0A_Init(void(*task)(void), uint32_t period){long sr;
   EndCritical(sr);
 }
 
-void Timer0A_Handler(void){
+void Timer0A_Handler(void){ // note length interrupt
   TIMER0_ICR_R = TIMER_ICR_TATOCINT;// acknowledge timer0A timeout
+	// get next note
+	// pause maybe and disable interrupts so there's sound btwn notes
+	// change Timer0A reload value
+	// change Timer1A reload value
   (*PeriodicTask0)();                // execute user task
 }
 
@@ -99,8 +103,9 @@ void Timer1A_Init(void(*task)(void), uint32_t period){
   TIMER1_CTL_R = 0x00000001;    // 10) enable TIMER1A
 }
 
-void Timer1A_Handler(void){
+void Timer1A_Handler(void){ // note frequency interrupt
   TIMER1_ICR_R = TIMER_ICR_TATOCINT;// acknowledge TIMER1A timeout
+	// output next index of sine wave to DAC
   (*PeriodicTask1)();                // execute user task
 }
 

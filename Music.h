@@ -12,3 +12,14 @@ struct Note {
 typedef struct Note Note;
 
 
+// ***************** PlaySong ****************
+// Begins the song from current index
+// Inputs: none
+// Outputs: none
+void PlaySong(void);
+
+// ***************** GetNextNote ****************
+// Gets the next note in the song
+// Inputs: none
+// Outputs: next note in the song
+Note GetNextNote(void);
