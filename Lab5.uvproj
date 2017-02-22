@@ -133,7 +133,7 @@
           <Target>
             <UseTarget>1</UseTarget>
             <LoadApplicationAtStartup>1</LoadApplicationAtStartup>
-            <RunToMain>0</RunToMain>
+            <RunToMain>1</RunToMain>
             <RestoreBreakpoints>1</RestoreBreakpoints>
             <RestoreWatchpoints>1</RestoreWatchpoints>
             <RestoreMemoryDisplay>1</RestoreMemoryDisplay>
@@ -411,11 +411,6 @@
               <FilePath>.\startup.s</FilePath>
             </File>
             <File>
-              <FileName>PeriodicTimer0AInts.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\PeriodicTimer0AInts.c</FilePath>
-            </File>
-            <File>
               <FileName>Timer0A.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Timer0A.c</FilePath>
@@ -426,9 +421,14 @@
               <FilePath>.\PLL.c</FilePath>
             </File>
             <File>
-              <FileName>TLV5616.c</FileName>
+              <FileName>main.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\TLV5616.c</FilePath>
+              <FilePath>.\main.c</FilePath>
+            </File>
+            <File>
+              <FileName>DAC.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\DAC.c</FilePath>
             </File>
           </Files>
         </Group>
