@@ -35,6 +35,8 @@
 #include "PLL.h"
 #include "Timer0A.h"
 #include "DAC.h"
+#include "Switch.h"
+#include "SysTick.h"
 
 
 #define PF1       (*((volatile uint32_t *)0x40025008))
@@ -69,7 +71,7 @@ void UserTask(void){
 #define F20KHZ (50000000/20000)
 //debug code
 int main(void){ 
-  PLL_Init(Bus80MHz);              // bus clock at 50 MHz
+  PLL_Init(Bus50MHz);              // bus clock at 50 MHz
   SYSCTL_RCGCGPIO_R |= 0x20;       // activate port F
   while((SYSCTL_PRGPIO_R&0x0020) == 0){};// ready?
   GPIO_PORTF_DIR_R |= 0x0E;        // make PF3-1 output (PF3-1 built-in LEDs)
@@ -81,6 +83,7 @@ int main(void){
   LEDS = 0;                        // turn all LEDs off
 //  Timer0A_Init(&UserTask, F20KHZ);     // initialize timer0A (20,000 Hz)
   Timer0A_Init(&UserTask, F16HZ);  // initialize timer0A (16 Hz)
+	SysTick_Init();
 	DAC_Init(0x1000);                  // initialize with command: Vout = Vref
   EnableInterrupts();
 

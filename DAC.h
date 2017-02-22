@@ -3,7 +3,6 @@
 // Matt Owens & Rebecca Ho
 // 2/21/17
 
-// TLV5616.h
 // Runs on LM4F120/TM4C123
 // Use SSI0 to send a 16-bit code to the TLV5616.
 // Daniel Valvano, September 11, 2013
