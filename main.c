@@ -56,6 +56,8 @@ const uint16_t wave[32] = {
   156*2,39*2,0*2,39*2,156*2,345*2,600*2,910*2,1264*2,1648*2};
 
 
+uint16_t wave_index = 0;
+	
 void DisableInterrupts(void); // Disable interrupts
 void EnableInterrupts(void);  // Enable interrupts
 long StartCritical (void);    // previous I bit, disable interrupts
@@ -68,6 +70,20 @@ void UserTask0(void){
 
 void UserTask1(void){
 	PF2 ^= 0x04;
+	/*
+	if(wave_index == 1) { 
+		DAC_Out(4000); 
+		wave_index = 0;
+	}
+	else { 
+		DAC_Out(0); 
+		wave_index++;
+	}
+	*/
+	uint16_t val = wave[wave_index%32];
+	DAC_Out(val);
+	wave_index++;
+	
 }
 // if desired interrupt frequency is f, Timer0A_Init parameter is busfrequency/f
 #define F16HZ (50000000/16)
@@ -89,7 +105,8 @@ int main(void){
   Timer0A_Init(&UserTask0, F1HZ);  // initialize timer0A (16 Hz)
 	Timer1A_Init(&UserTask1, F20KHZ);  // initialize timer0A (16 Hz)
 	SysTick_Init();
-	DAC_Init(0x1000);                  // initialize with command: Vout = Vref
+	//DAC_Init(0x1000);                  // initialize with command: Vout = Vref
+	DAC_Init(0x1FFE);
   EnableInterrupts();
 
   while(1){

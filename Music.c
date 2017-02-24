@@ -47,7 +47,9 @@ void PlaySong() {
 	long sr = StartCritical();
 	Note n = Song[i%56];
 	// maybe put some kind of pause here and disable interrupts so break btwn notes
-	Timer1A_SetReload(BUS/n.freq); // note frequency interrupt
+	uint32_t length = BUS/n.freq; // frequency of DAC output
+	length = length/32;
+	Timer1A_SetReload(length); // note frequency interrupt
 	Timer0A_SetReload(F2HZ*n.length); // note length interrupt
 	i++;
 	EndCritical(sr);
