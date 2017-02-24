@@ -11,6 +11,8 @@ struct Note {
 };
 typedef struct Note Note;
 
+enum NoteType {SongNote, HarmonyNote}; 
+typedef enum NoteType NoteType;
 
 // ***************** PlaySong ****************
 // Begins the song from current index
@@ -22,4 +24,17 @@ void PlaySong(void);
 // Gets the next note in the song
 // Inputs: none
 // Outputs: next note in the song
-Note GetNextNote(void);
+Note GetNextNote(NoteType);
+
+// ***************** Timer1SetNextNote ****************
+// Sets the new count and reload value for Timer1 depending on
+// the next note
+// Inputs: none
+// Outputs: next note in the song
+void Timer1SetNextNote(void);
+
+void Timer0SetNextNote(void);
+
+void OutputSine0(void);
+
+void OutputSine1(void);

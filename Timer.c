@@ -30,7 +30,10 @@
  http://users.ece.utexas.edu/~valvano/
  */
 #include <stdint.h>
+#include <stdbool.h>
 #include "..\ValvanoWareTM4C123\ValvanoWareTM4C123\inc\tm4c123gh6pm.h"
+#include "Music.h"
+#include "SysTick.h"
 
 
 
@@ -39,10 +42,11 @@ void EnableInterrupts(void);  // Enable interrupts
 long StartCritical (void);    // previous I bit, disable interrupts
 void EndCritical(long sr);    // restore I bit to previous value
 void WaitForInterrupt(void);  // low power mode
-void (*PeriodicTask0)(void);   // user function for Timer 0
-void (*PeriodicTask1)(void);   // user function for Timer 1
 
+uint32_t Timer0Count = 0;
+uint32_t Timer0Wait = 0;
 uint32_t Timer1Count = 0;
+uint32_t Timer1Wait = 0;
 
 
 // ***************** Timer0A_Init ****************
@@ -53,7 +57,6 @@ uint32_t Timer1Count = 0;
 void Timer0A_Init(void(*task)(void), uint32_t period){long sr;
   sr = StartCritical(); 
   SYSCTL_RCGCTIMER_R |= 0x01;   // 0) activate TIMER0
-  PeriodicTask0 = task;          // user function
   TIMER0_CTL_R = 0x00000000;    // 1) disable TIMER0A during setup
   TIMER0_CFG_R = 0x00000000;    // 2) configure for 32-bit mode
   TIMER0_TAMR_R = 0x00000002;   // 3) configure for periodic mode, default down-count settings
@@ -71,15 +74,22 @@ void Timer0A_Init(void(*task)(void), uint32_t period){long sr;
 
 void Timer0A_Handler(void){ // note length interrupt
   TIMER0_ICR_R = TIMER_ICR_TATOCINT;// acknowledge timer0A timeout
-	// get next note
-	// pause maybe and disable interrupts so there's sound btwn notes
-	// change Timer0A reload value
-	// change Timer1A reload value
-  (*PeriodicTask0)();                // execute user task
+	if(Timer0Wait > 0) { // don't play anything
+		Timer0Wait = Timer0Wait - 1;
+		return;
+	}
+	// output next index of sine wave to DAC
+  OutputSine0();               // execute user task
+	Timer0Count = Timer0Count - 1;
+	if(Timer0Count == 0) {
+		Timer0SetNextNote();
+	}
 }
 
-void Timer0A_SetReload(uint32_t period) {
+void Timer0A_SetReload(uint32_t period, uint32_t count, uint32_t wait) {
 	TIMER0_TAILR_R = period-1;    // reload value
+	Timer0Count = count;
+	Timer0Wait = wait;
 }
 
 // ***************** TIMER1_Init ****************
@@ -87,9 +97,8 @@ void Timer0A_SetReload(uint32_t period) {
 // Inputs:  task is a pointer to a user function
 //          period in units (1/clockfreq)
 // Outputs: none
-void Timer1A_Init(void(*task)(void), uint32_t period){
+void Timer1A_Init(uint32_t period){
   SYSCTL_RCGCTIMER_R |= 0x02;   // 0) activate TIMER1
-  PeriodicTask1 = task;          // user function
   TIMER1_CTL_R = 0x00000000;    // 1) disable TIMER1A during setup
   TIMER1_CFG_R = 0x00000000;    // 2) configure for 32-bit mode
   TIMER1_TAMR_R = 0x00000002;   // 3) configure for periodic mode, default down-count settings
@@ -106,12 +115,22 @@ void Timer1A_Init(void(*task)(void), uint32_t period){
 
 void Timer1A_Handler(void){ // note frequency interrupt
   TIMER1_ICR_R = TIMER_ICR_TATOCINT;// acknowledge TIMER1A timeout
+	if(Timer1Wait > 0) { // don't play anything
+		Timer1Wait = Timer1Wait - 1;
+		return;
+	}
 	// output next index of sine wave to DAC
-  (*PeriodicTask1)();                // execute user task
+  OutputSine1();               // execute user task
+	Timer1Count = Timer1Count - 1;
+	if(Timer1Count == 0) {
+		Timer1SetNextNote();
+	}
+	
 }
 
-void Timer1A_SetReload(uint32_t period, uint32_t count) {
+void Timer1A_SetReload(uint32_t period, uint32_t count, uint32_t wait) {
 	TIMER1_TAILR_R = period-1;    // reload value
 	Timer1Count = count;
+	Timer1Wait = wait;
 	
 }

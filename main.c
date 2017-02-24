@@ -30,6 +30,7 @@
 
 #include "..\ValvanoWareTM4C123\ValvanoWareTM4C123\inc\tm4c123gh6pm.h"
 #include <stdint.h>
+#include <stdbool.h>
 #include "PLL.h"
 #include "Timer.h"
 #include "DAC.h"
@@ -43,20 +44,7 @@
 #define PF3       (*((volatile uint32_t *)0x40025020))
 #define LEDS      (*((volatile uint32_t *)0x40025038))
 
-// 12-bit 32-element sine wave
-// multiply each value by 2 to shift into bits 12:1 of SSI packet
-// three control bits in 15:13 are all zero for immediate DAC update
-// book figure shows MAX5353 in unipolar rail-to-rail configuration
-// that means when wave[n] = 0x0000 (LSB = 0), output = 0
-//                 wave[n] = 0x1000 (LSB = 0), output = Vref
-//                 wave[n] = 0x1FFE (LSB = 0), output = 2*Vref
-const uint16_t wave[32] = {
-  2048*2,2448*2,2832*2,3186*2,3496*2,3751*2,3940*2,4057*2,4095*2,4057*2,3940*2,
-  3751*2,3496*2,3186*2,2832*2,2448*2,2048*2,1648*2,1264*2,910*2,600*2,345*2,
-  156*2,39*2,0*2,39*2,156*2,345*2,600*2,910*2,1264*2,1648*2};
 
-
-uint16_t wave_index = 0;
 	
 void DisableInterrupts(void); // Disable interrupts
 void EnableInterrupts(void);  // Enable interrupts
@@ -64,28 +52,7 @@ long StartCritical (void);    // previous I bit, disable interrupts
 void EndCritical(long sr);    // restore I bit to previous value
 void WaitForInterrupt(void);  // low power mode
 
-void UserTask0(void){
-	PF1 ^= 0x02;
-}
 
-void UserTask1(void){
-	PF2 ^= 0x04;
-	/*
-	if(wave_index == 1) { 
-		DAC_Out(4000); 
-		wave_index = 0;
-	}
-	else { 
-		DAC_Out(0); 
-		wave_index++;
-	}
-	*/
-	wave_index = wave_index%32;
-	uint16_t val = wave[wave_index%32];
-	DAC_Out(val);
-	wave_index++;
-	
-}
 // if desired interrupt frequency is f, Timer0A_Init parameter is busfrequency/f
 #define F16HZ (50000000/16)
 #define F20KHZ (50000000/20000)
@@ -104,13 +71,14 @@ int main(void){
   GPIO_PORTF_AMSEL_R = 0;          // disable analog functionality on PF
   LEDS = 0;                        // turn all LEDs off
 //  Timer0A_Init(&UserTask, F20KHZ);     // initialize timer0A (20,000 Hz)
-  Timer0A_Init(&UserTask0, F1HZ);  // initialize timer0A (16 Hz)
-	Timer1A_Init(&UserTask1, F10KHZ);  // initialize timer0A (16 Hz)
+  Timer0A_Init(F1HZ);  // initialize timer0A (16 Hz)
+	Timer1A_Init(F10KHZ);  // initialize timer0A (16 Hz)
 	SysTick_Init();
 	//DAC_Init(0x1000);                  // initialize with command: Vout = Vref
 	DAC_Init(0x1FFE);
   EnableInterrupts();
-
+	
+	PlaySong();
   while(1){
     WaitForInterrupt();
   }

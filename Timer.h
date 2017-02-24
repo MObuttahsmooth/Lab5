@@ -34,25 +34,25 @@
 // Inputs:  task is a pointer to a user function
 //          period in units (1/clockfreq), 32 bits
 // Outputs: none
-void Timer0A_Init(void(*task)(void), uint32_t period);
+void Timer0A_Init(uint32_t period);
 
 // ***************** Timer0A_SetReload ****************
 // Change the reload value of Timer0A.
 // Inputs: period in units (1/clockfreq), 32 bits
 // Outputs: none
-void Timer0A_SetReload(uint32_t period);
+void Timer0A_SetReload(uint32_t period, uint32_t count, uint32_t wait);
 
 // ***************** Timer1A_Init ****************
 // Activate Timer0A interrupts to run user task periodically
 // Inputs:  task is a pointer to a user function
 //          period in units (1/clockfreq), 32 bits
 // Outputs: none
-void Timer1A_Init(void(*task)(void), uint32_t period);
+void Timer1A_Init(uint32_t period);
 
 // ***************** Timer1A_SetReload ****************
 // Change the reload value of Timer1A.
 // Inputs: period in units (1/clockfreq), 32 bits
 // Outputs: none
-void Timer1A_SetReload(uint32_t period, uint32_t count);
+void Timer1A_SetReload(uint32_t period, uint32_t count, uint32_t wait);
 
 #endif // __TIMER_H__
