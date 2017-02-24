@@ -53,6 +53,6 @@ void Timer1A_Init(void(*task)(void), uint32_t period);
 // Change the reload value of Timer1A.
 // Inputs: period in units (1/clockfreq), 32 bits
 // Outputs: none
-void Timer1A_SetReload(uint32_t period);
+void Timer1A_SetReload(uint32_t period, uint32_t count);
 
 #endif // __TIMER_H__

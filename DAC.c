@@ -71,9 +71,9 @@ void DAC_Init(uint16_t data){
 	GPIO_PORTD_PCTL_R = (GPIO_PORTD_PCTL_R&0xFFFF0000)+0x00002222; // write 2 to port to signify SSI
 	GPIO_PORTD_AMSEL_R = 0; // disable analog functionality
 	SSI1_CR1_R = 0x00000000; // disable SSI, master mode
-	SSI1_CPSR_R = 0x02; // 0x02 for 8MHz SSIClk @ 20MHz, bit rate = (bus freq = 50MHz)/(CPSR*(1+SCR))
+	SSI1_CPSR_R = 0x08; // 0x02 for 8MHz SSIClk @ 20MHz, bit rate = (bus freq = 50MHz)/(CPSR*(1+SCR))
 	SSI1_CR0_R &= ~(0x0000FFF0); // SCR = 0, SPH = 0, SPO = 0, Freescale
-	//SSI1_CR0_R |= SSI_CR0_SPO; // SPO = 1 (flip clock bit)
+	SSI1_CR0_R |= SSI_CR0_SPO; // SPO = 1 (flip clock bit)
 	SSI1_CR0_R |= 0x0F; // DSS = 16-bit data
 	SSI1_DR_R = data; // load data into TX FIFO
 	SSI1_CR1_R |= 0x00000002; // enable SSI

@@ -80,6 +80,7 @@ void UserTask1(void){
 		wave_index++;
 	}
 	*/
+	wave_index = wave_index%32;
 	uint16_t val = wave[wave_index%32];
 	DAC_Out(val);
 	wave_index++;
@@ -88,6 +89,7 @@ void UserTask1(void){
 // if desired interrupt frequency is f, Timer0A_Init parameter is busfrequency/f
 #define F16HZ (50000000/16)
 #define F20KHZ (50000000/20000)
+#define F10KHZ (50000000/10000)
 #define F1HZ 50000000
 //debug code
 int main(void){ 
@@ -103,7 +105,7 @@ int main(void){
   LEDS = 0;                        // turn all LEDs off
 //  Timer0A_Init(&UserTask, F20KHZ);     // initialize timer0A (20,000 Hz)
   Timer0A_Init(&UserTask0, F1HZ);  // initialize timer0A (16 Hz)
-	Timer1A_Init(&UserTask1, F20KHZ);  // initialize timer0A (16 Hz)
+	Timer1A_Init(&UserTask1, F10KHZ);  // initialize timer0A (16 Hz)
 	SysTick_Init();
 	//DAC_Init(0x1000);                  // initialize with command: Vout = Vref
 	DAC_Init(0x1FFE);

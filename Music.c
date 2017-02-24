@@ -47,12 +47,16 @@ void PlaySong() {
 	long sr = StartCritical();
 	Note n = Song[i%56];
 	// maybe put some kind of pause here and disable interrupts so break btwn notes
-	uint32_t length = BUS/n.freq; // frequency of DAC output
-	length = length/32;
-	Timer1A_SetReload(length); // note frequency interrupt
-	Timer0A_SetReload(F2HZ*n.length); // note length interrupt
+	uint32_t freq = BUS/n.freq; // frequency of DAC output
+	freq = freq/32; // sine wave has 32 pieces
+	// will interrupt n.freq*32 times a second, length is based on half a second 
+	// so halve 32 to 16
+	uint32_t count = n.freq*16*n.length; 
+	Timer1A_SetReload(freq, count); // note frequency interrupt	
 	i++;
 	EndCritical(sr);
+	
+	//Timer0A_SetReload(F2HZ*n.length); // note length interrupt
 	
 }
 

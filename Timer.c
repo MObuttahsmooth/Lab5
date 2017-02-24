@@ -42,6 +42,7 @@ void WaitForInterrupt(void);  // low power mode
 void (*PeriodicTask0)(void);   // user function for Timer 0
 void (*PeriodicTask1)(void);   // user function for Timer 1
 
+uint32_t Timer1Count = 0;
 
 
 // ***************** Timer0A_Init ****************
@@ -109,6 +110,8 @@ void Timer1A_Handler(void){ // note frequency interrupt
   (*PeriodicTask1)();                // execute user task
 }
 
-void Timer1A_SetReload(uint32_t period) {
+void Timer1A_SetReload(uint32_t period, uint32_t count) {
 	TIMER1_TAILR_R = period-1;    // reload value
+	Timer1Count = count;
+	
 }
