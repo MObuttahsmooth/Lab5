@@ -29,8 +29,8 @@ void GPIOPortE_Handler(void);
 // Output: none
 void GPIOPortF_Handler(void);
 
-//------------DelayWait10ms------------
-// Causes a 10ms delay
-// Input: n, number of 10 ms delays desired
+//------------CheckSwitches------------
+// Checks if a switch has been pressed
+// Input: none
 // Output: none
-void DelayWait10ms(uint32_t);
+void CheckSwitches(void);

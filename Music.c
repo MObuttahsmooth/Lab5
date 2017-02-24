@@ -61,7 +61,16 @@ Note Harmony[52] = {{C_low,2},{C_low,3},{C_low,1},{C_low,2},{F_low,2},{E_low,3},
 
 int harmony_index = 0;
 int harmony_size = 52;
-		
+
+uint16_t Envelope[100] = {0,29,39,45,49,52,55,58,60,62,63,65,66,67,69,70,71,72,73,74,74,75,76,77,77,78,79,79,
+		80,80,81,81,82,82,83,83,84,85,85,85,86,86,87,87,87,88,88,88,89,89,89,90,90,91,91,91,91,92,92,92,92,92,92,
+		92,92,92,92,92,92,92,92,92,92,92,92,92,92,92,92,92,92,92,92,92,92,92,92,92,92,92,92,92,92,92,92,92,92,92,
+		92,92};
+
+
+uint16_t env_index = 0;
+uint16_t env_size = 100;
+	
 // 12-bit 32-element sine wave
 // multiply each value by 2 to shift into bits 12:1 of SSI packet
 // three control bits in 15:13 are all zero for immediate DAC update
@@ -88,24 +97,45 @@ const uint16_t wave1[32] = {
 
 uint16_t wave1_index = 0;
 	
-void OutputSine0(){ // harmony
-	wave0_index = wave0_index%32;
-	uint16_t val = wave0[wave0_index];
-	//DAC_Out((val/3) * 2);
-	DAC_Out(val);
-	wave0_index++;	
-}
+bool Play = false;
 	
-void OutputSine1(){ // melody
-	wave1_index = wave1_index%32;
-	uint16_t val = wave1[wave1_index];
-	//DAC_Out((val/3) * 2);
-	DAC_Out(val);
-	wave1_index++;	
+void OutputSine0(){ // harmony
+	//if(Play) {
+		wave0_index = wave0_index%32;
+		uint16_t val = wave0[wave0_index];
+		//DAC_Out((val/3) * 2);
+		DAC_Out(val);
+		wave0_index++;	
+	}
+//}
+	
+void OutputSine1(bool end){ // melody
+	if(Play) {
+		wave1_index = wave1_index%32;
+		uint32_t val = wave1[wave1_index];
+		
+		uint32_t env;
+		//DAC_Out((val/3) * 2);
+		if(end == true) { // last 100 values in the note
+			env_index = env_index - 1;
+			env = Envelope[env_index];
+		} else if(env_index == env_size) {
+			env = Envelope[99]; // last value in the envelope
+		} else {
+			env = Envelope[env_index];
+			env_index++;
+		}
+		val = (val*env)/100;
+		DAC_Out(val);
+		wave1_index++;	
+	}
 }
 
 	
 void PlaySong() {
+	Timers_Enable();
+
+	Play = true;
 	long sr = StartCritical();
 	song_index = song_index%song_size;
 	harmony_index = harmony_index%harmony_size;
@@ -126,7 +156,7 @@ void PlaySong() {
 	uint32_t h_count = h.freq*ONETWENTY_BPM*h.length;
 	uint32_t wait = 0;
 	
-	Timer0A_SetReload(h_freq, h_count, wait);
+	//Timer0A_SetReload(h_freq, h_count, wait);
 	Timer1A_SetReload(s_freq, s_count, wait); // note frequency interrupt	
 	EndCritical(sr);
 	
@@ -156,9 +186,11 @@ void Timer1SetNextNote() {
 	freq = freq/32; // sine wave has 32 pieces
 	// will interrupt n.freq*32 times a second, length is based on half a second 
 	// so halve 32 to 16
-	uint32_t wait = (n.freq*32)/100; // wait 10 ms
-	uint32_t count = n.freq*ONETWENTY_BPM*n.length + wait; 
+	//uint32_t wait = (n.freq*32)/100; // wait 10 ms
+	uint32_t wait = 0;
+	uint32_t count = n.freq*ONETWENTY_BPM*n.length + wait; 	
 	Timer1A_SetReload(freq, count, wait); // note frequency interrupt	
+	env_index = 0;
 	
 }
 
@@ -172,5 +204,17 @@ void Timer0SetNextNote() {
 	uint32_t count = n.freq*ONETWENTY_BPM*n.length + wait; 
 	Timer1A_SetReload(freq, count, wait); // note frequency interrupt	
 	
+}
+
+bool GetPlayState() {
+	return Play;
+}
+
+void Pause() {
+	Timers_Disable();
+	Play = false;
+
+	wave0_index = 0;
+	wave1_index = 0;
 }
 

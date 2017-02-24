@@ -48,6 +48,10 @@ uint32_t Timer0Wait = 0;
 uint32_t Timer1Count = 0;
 uint32_t Timer1Wait = 0;
 
+bool Timer0Disabled = false;
+bool Timer1Disabled = false;
+bool TimersDisabled = false;
+
 
 // ***************** Timer0A_Init ****************
 // Activate TIMER0 interrupts to run user task periodically
@@ -74,6 +78,7 @@ void Timer0A_Init(void(*task)(void), uint32_t period){long sr;
 
 void Timer0A_Handler(void){ // note length interrupt
   TIMER0_ICR_R = TIMER_ICR_TATOCINT;// acknowledge timer0A timeout
+	if(TimersDisabled) { return; }
 	if(Timer0Wait > 0) { // don't play anything
 		Timer0Wait = Timer0Wait - 1;
 		return;
@@ -84,6 +89,14 @@ void Timer0A_Handler(void){ // note length interrupt
 	if(Timer0Count == 0) {
 		Timer0SetNextNote();
 	}
+}
+
+void Timers_Disable(void) {
+	TimersDisabled = true;
+}
+
+void Timers_Enable(void) {
+	TimersDisabled = false;
 }
 
 void Timer0A_SetReload(uint32_t period, uint32_t count, uint32_t wait) {
@@ -115,17 +128,30 @@ void Timer1A_Init(uint32_t period){
 
 void Timer1A_Handler(void){ // note frequency interrupt
   TIMER1_ICR_R = TIMER_ICR_TATOCINT;// acknowledge TIMER1A timeout
+	if(TimersDisabled) { return; }
 	if(Timer1Wait > 0) { // don't play anything
 		Timer1Wait = Timer1Wait - 1;
 		return;
 	}
 	// output next index of sine wave to DAC
-  OutputSine1();               // execute user task
+	if(Timer1Count <= 100) { // last 100 notes
+		OutputSine1(true);               // execute user task
+	} else {
+		OutputSine1(false);
+	}
 	Timer1Count = Timer1Count - 1;
 	if(Timer1Count == 0) {
 		Timer1SetNextNote();
 	}
 	
+}
+
+void Timer1A_Disable() {
+	Timer1Disabled = true;
+}
+
+void Timer1A_Enable() {
+	Timer1Disabled = false;    // enable TIMER1A
 }
 
 void Timer1A_SetReload(uint32_t period, uint32_t count, uint32_t wait) {

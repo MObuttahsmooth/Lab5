@@ -4,14 +4,19 @@
 // 2/21/17
 
 #include <stdint.h>
+#include <stdbool.h>
 #include "../ValvanoWareTM4C123/ValvanoWareTM4C123/inc/tm4c123gh6pm.h"
 #include "SysTick.h"
+#include "Music.h"
 
 #define PF1             (*((volatile uint32_t *)0x40025008))
 #define PF2             (*((volatile uint32_t *)0x40025010))
 #define PF3							(*((volatile uint32_t *)0x40025020))
 #define PF4   					(*((volatile uint32_t *)0x40025040))
 	
+bool PlayPressed = false;
+bool RewindPressed = false;
+bool ModePressed = false;
 
 void PortF_Init() {
 	SYSCTL_RCGCGPIO_R |= 0x20;            // activate port F clock
@@ -61,6 +66,7 @@ void GPIOPortE_Handler(void) {
 		GPIO_PORTE_ICR_R = 0x10;		// acknowledge flag4
 		SysTick_Wait10ms(10);
 		if(GPIO_PORTE_DATA_R&0x10) {
+			PlayPressed = true;
 		}
 
 	}
@@ -68,6 +74,7 @@ void GPIOPortE_Handler(void) {
 		GPIO_PORTE_ICR_R = 0x20;		// acknowledge flag5
 		SysTick_Wait10ms(10);
 		if(GPIO_PORTE_DATA_R&0x20) {
+			RewindPressed = true;
 		}
 	}
 }
@@ -76,6 +83,29 @@ void GPIOPortF_Handler(void){		// PF4, MODE switch
   GPIO_PORTF_ICR_R = 0x10;      // acknowledge flag4
 	SysTick_Wait10ms(10);
 	if(GPIO_PORTF_DATA_R&0x10) {
+		PlayPressed = true;
 	}
+}
+
+void ResetSwitches() {
+	PlayPressed = false;
+	RewindPressed = false;
+	ModePressed = false;
+}
+
+void CheckSwitches() {
+	if(PlayPressed) {
+		if(GetPlayState() == false) { // music not currently playing
+			PlaySong();
+		} else {
+			Pause();
+		}
+		ResetSwitches();
+	} else if(RewindPressed) {
+		ResetSwitches();
+	} else if(ModePressed) {
+		ResetSwitches();
+	}
+
 }
 

@@ -37,4 +37,8 @@ void Timer0SetNextNote(void);
 
 void OutputSine0(void);
 
-void OutputSine1(void);
+void OutputSine1(bool);
+
+bool GetPlayState(void);
+
+void Pause(void);

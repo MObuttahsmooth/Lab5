@@ -61,25 +61,18 @@ void WaitForInterrupt(void);  // low power mode
 //debug code
 int main(void){ 
   PLL_Init(Bus50MHz);              // bus clock at 50 MHz
-  SYSCTL_RCGCGPIO_R |= 0x20;       // activate port F
-  while((SYSCTL_PRGPIO_R&0x0020) == 0){};// ready?
-  GPIO_PORTF_DIR_R |= 0x0E;        // make PF3-1 output (PF3-1 built-in LEDs)
-  GPIO_PORTF_AFSEL_R &= ~0x0E;     // disable alt funct on PF3-1
-  GPIO_PORTF_DEN_R |= 0x0E;        // enable digital I/O on PF3-1
-                                   // configure PF3-1 as GPIO
-  GPIO_PORTF_PCTL_R = (GPIO_PORTF_PCTL_R&0xFFFFF0FF)+0x00000000;
-  GPIO_PORTF_AMSEL_R = 0;          // disable analog functionality on PF
-  LEDS = 0;                        // turn all LEDs off
-//  Timer0A_Init(&UserTask, F20KHZ);     // initialize timer0A (20,000 Hz)
-  Timer0A_Init(F1HZ);  // initialize timer0A (16 Hz)
-	Timer1A_Init(F10KHZ);  // initialize timer0A (16 Hz)
+	PortF_Init();
+	PortE_Init();
+  //Timer0A_Init(F1HZ);  // initialize timer0A (16 Hz)
+	Timer1A_Init(F1HZ);  // initialize timer0A (16 Hz)
 	SysTick_Init();
 	//DAC_Init(0x1000);                  // initialize with command: Vout = Vref
-	DAC_Init(0x1FFE);
+	DAC_Init(0x1000);
   EnableInterrupts();
 	
-	PlaySong();
+	//PlaySong();
   while(1){
+		CheckSwitches();
     WaitForInterrupt();
   }
 }
