@@ -62,11 +62,11 @@ void PortE_Init() { // switches are connected to PortE
 }
 
 void GPIOPortE_Handler(void) {
-	if(GPIO_PORTE_RIS_R&0x10) {		// poll PE4, PLAY/PAUSE switch
+	if(GPIO_PORTE_RIS_R&0x10) {		// poll PE4, MODE switch
 		GPIO_PORTE_ICR_R = 0x10;		// acknowledge flag4
 		SysTick_Wait10ms(10);
 		if(GPIO_PORTE_DATA_R&0x10) {
-			PlayPressed = true;
+			ModePressed = true;
 		}
 
 	}
@@ -80,11 +80,11 @@ void GPIOPortE_Handler(void) {
 	}
 }
 
-void GPIOPortF_Handler(void){		// PF4, MODE switch
+void GPIOPortF_Handler(void){		// PF4, PLAY/PAUSE switch
   GPIO_PORTF_ICR_R = 0x10;      // acknowledge flag4
 	SysTick_Wait10ms(10);
 	if(GPIO_PORTF_DATA_R&0x10) {
-		ModePressed = true;
+		PlayPressed = true;
 	}
 }
 
