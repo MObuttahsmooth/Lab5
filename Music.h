@@ -42,3 +42,7 @@ void OutputSine1(bool);
 bool GetPlayState(void);
 
 void Pause(void);
+
+void Rewind(bool playing);
+
+void ChangeTempo(void);

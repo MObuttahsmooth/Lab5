@@ -75,6 +75,7 @@ void GPIOPortE_Handler(void) {
 		SysTick_Wait10ms(10);
 		if(GPIO_PORTE_DATA_R&0x20) {
 			RewindPressed = true;
+			//PlayPressed = true;
 		}
 	}
 }
@@ -83,7 +84,7 @@ void GPIOPortF_Handler(void){		// PF4, MODE switch
   GPIO_PORTF_ICR_R = 0x10;      // acknowledge flag4
 	SysTick_Wait10ms(10);
 	if(GPIO_PORTF_DATA_R&0x10) {
-		PlayPressed = true;
+		ModePressed = true;
 	}
 }
 
@@ -102,9 +103,11 @@ void CheckSwitches() {
 		}
 		ResetSwitches();
 	} else if(RewindPressed) {
-		ResetSwitches();
+			Rewind(GetPlayState());
+			ResetSwitches();
 	} else if(ModePressed) {
-		ResetSwitches();
+			ChangeTempo();
+			ResetSwitches();
 	}
 
 }

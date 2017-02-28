@@ -5,6 +5,8 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#include <math.h>
+#include <float.h>
 #include "Music.h"
 #include "Timer.h"
 #include "DAC.h"
@@ -22,6 +24,9 @@ void WaitForInterrupt(void);  // low power mode
 // define tempos
 const uint16_t SIXTY_BPM = 32/2; // tempo of 60 bpm
 const uint16_t ONETWENTY_BPM = 32/4; // tempo of 120 bpm
+
+//tempo divider (speed up)
+float tempo = 1;
 
 // define frequencies for different notes
 // range of song is high b flat to low c
@@ -44,7 +49,7 @@ const uint16_t A_low = 220;
 
 Note Song[56] = {{C_low,2},{F_low,3},{F_low,1},{F_low,2},{A_mid,2},{G_mid,3},{F_low,1},{G_mid,2},{A_mid,2},
 		{F_low,3},{F_low,1},{A_mid,2},{C_mid,2},{D_mid,6},{D_mid,2},{C_mid,3},{A_mid,1},{A_mid,2},{F_low,2},
-		{G_mid,3},{F_low,1},{G_mid,2},{A_mid,2},{F_low,3},{F_low,1},{E_low,2},{E_low,2},{F_low,6},{D_mid,2},
+		{G_mid,3},{F_low,1},{G_mid,2},{A_mid,2},{F_low,3},{D_low,1},{D_low,2},{C_low,2},{F_low,6},{D_mid,2},
 		{C_mid,3},{A_mid,1},{A_mid,2},{F_low,2},{G_mid,3},{F_low,1},{G_mid,2},{D_mid,2},{C_mid,3},{A_mid,1},
 		{A_mid,2},{C_mid,2},{D_mid,6},{F_mid,2},{C_mid,3},{A_mid,1},{A_mid,2},{F_low,2},{G_mid,3},{F_low,1},
 		{G_mid,2},{A_mid,1},{G_mid,1},{F_low,3},{F_low,1},{E_low,4},{F_low,6}};
@@ -153,6 +158,10 @@ void PlaySong() {
 	// will interrupt n.freq*32 times a second, length is based on half a second 
 	// so halve 32 to 16
 	uint32_t s_count = s.freq*ONETWENTY_BPM*s.length; 
+	
+	//TEMPO
+	s_count = s_count/tempo;
+	
 	uint32_t h_count = h.freq*ONETWENTY_BPM*h.length;
 	uint32_t wait = 0;
 	
@@ -188,7 +197,11 @@ void Timer1SetNextNote() {
 	// so halve 32 to 16
 	//uint32_t wait = (n.freq*32)/100; // wait 10 ms
 	uint32_t wait = 0;
-	uint32_t count = n.freq*ONETWENTY_BPM*n.length + wait; 	
+	uint32_t count = n.freq*ONETWENTY_BPM*n.length + wait;
+	
+	//TEMPO
+	count = count/tempo;
+	
 	Timer1A_SetReload(freq, count, wait); // note frequency interrupt	
 	env_index = 0;
 	
@@ -218,3 +231,22 @@ void Pause() {
 	wave1_index = 0;
 }
 
+void Rewind(bool playing) {
+	if(playing){							//if song is playing, pause it
+		Pause();
+	}
+	wave0_index = 0;
+	wave1_index = 0;
+	song_index = 0;
+	harmony_index = 0;
+	env_index = 0;
+}
+
+void ChangeTempo(void){
+	if(tempo == 1)
+		tempo = 2;
+	else if(tempo == 2)
+		tempo = 0.5;
+	else
+		tempo = 1;
+}
